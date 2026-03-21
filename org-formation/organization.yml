@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09-OC'
+Description: Template to create a dev and prod OU and accounts
+# personal info has been dummied out
+
+Organization:
+  ManagementAccount:
+    Type: OC::ORG::MasterAccount
+    Properties:
+      AccountName: example
+      AccountId: '123456789012'
+      RootEmail: example@gmail.com
+      Alias: exampleexample
+
+  OrganizationRoot:
+    Type: OC::ORG::OrganizationRoot
+    Properties:
+      DefaultOrganizationAccessRoleName: OrganizationAccountAccessRole
+  
+  ProductionAccount:
+    Type: OC::ORG::Account
+    Properties:
+      RootEmail: example+prod@gmail.com
+      AccountName: Production Account
+      Tags:
+        Environment: Prod
+
+  DevelopmentAccount:
+    Type: OC::ORG::Account
+    Properties:
+      RootEmail: example+dev@gmail.com
+      AccountName: Development Account
+      Tags:
+        Environment: Dev 
+
+  ProductionOU:
+    Type: OC::ORG::OrganizationalUnit
+    Properties:
+      OrganizationalUnitName: Production
+      Accounts:
+        - !Ref ProductionAccount
+       
+  DevelopmentOU:
+    Type: OC::ORG::OrganizationalUnit
+    Properties:
+      OrganizationalUnitName: Development
+      Accounts:
+        - !Ref DevelopmentAccount
+        
