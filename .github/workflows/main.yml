@@ -1,0 +1,26 @@
+name: Update Backend
+on: [push]
+env: 
+  AWS_REGION: us-east-1
+permissions: 
+  id-token: write
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v6
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: arn:aws:iam::876762732886:role/GitHubAction-S3Upload
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      - name: install Terraform
+        uses: hashicorp/setup-terraform@v4.0.0
+      - name: build with Terraform  
+        run: |
+          cd terraform
+          terraform init
+          terraform plan
