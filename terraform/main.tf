@@ -97,6 +97,7 @@ resource "aws_api_gateway_method_response" "optionsStatus" {
 }
 
 resource "aws_api_gateway_integration_response" "options" {
+  depends_on  = [aws_api_gateway_method_response.optionsStatus]
   rest_api_id = aws_api_gateway_rest_api.restTest.id
   resource_id = aws_api_gateway_rest_api.restTest.root_resource_id
   http_method = aws_api_gateway_method.myOPTIONS.http_method
