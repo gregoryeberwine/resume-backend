@@ -28,6 +28,6 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'headers': {
             'Access-Control-Allow-Origin': 'https://gregoryeberwine.com'
-        }
+        },
         'body': json.dumps({'numberVisitors': increment})
     }
