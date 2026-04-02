@@ -163,7 +163,7 @@ resource "aws_cloudwatch_metric_alarm" "apiLatency" {
   alarm_name          = "apiLatency"
   evaluation_periods  = "1"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  threshold           = "1000"
+  threshold           = "3000"
   statistic           = "Average"
   period              = "300"
   namespace           = "AWS/ApiGateway"
