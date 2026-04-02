@@ -156,5 +156,5 @@ variable "notification_email" {
 resource "aws_sns_topic_subscription" "emailNotifications" {
   endpoint  = var.notification_email
   protocol  = "email"
-  topic_arn = aws_cloudwatch_metric_alarm.invocationFailure.arn
+  topic_arn = aws_sns_topic.alarmNotifications.arn
 }
