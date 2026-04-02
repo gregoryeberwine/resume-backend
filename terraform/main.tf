@@ -128,3 +128,33 @@ resource "aws_lambda_permission" "lambdaAPIPermission" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.restTest.execution_arn}/*/*"
 }
+
+resource "aws_cloudwatch_metric_alarm" "invocationFailure" {
+  alarm_name          = "invocationFailure"
+  evaluation_periods  = "1"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "1"
+  statistic           = "Sum"
+  period              = "60"
+  namespace           = "AWS/Lambda"
+  metric_name         = "Errors"
+  dimensions = {
+    function_name = aws_lambda_function.visitorCounter.function_name
+  }
+  alarm_actions = [aws_sns_topic.alarmNotifications.arn]
+}
+
+resource "aws_sns_topic" "alarmNotifications" {
+  name = "alarmNotifications"
+}
+
+variable "notification_email" {
+  type      = string
+  sensitive = true
+}
+
+resource "aws_sns_topic_subscription" "emailNotifications" {
+  endpoint  = var.notification_email
+  protocol  = "email"
+  topic_arn = aws_cloudwatch_metric_alarm.invocationFailure.arn
+}
