@@ -135,11 +135,41 @@ resource "aws_cloudwatch_metric_alarm" "invocationFailure" {
   comparison_operator = "GreaterThanOrEqualToThreshold"
   threshold           = "1"
   statistic           = "Sum"
-  period              = "60"
+  period              = "300"
   namespace           = "AWS/Lambda"
   metric_name         = "Errors"
   dimensions = {
     function_name = aws_lambda_function.visitorCounter.function_name
+  }
+  alarm_actions = [aws_sns_topic.alarmNotifications.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "invocations" {
+  alarm_name          = "invocations"
+  evaluation_periods  = "1"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "50"
+  statistic           = "Sum"
+  period              = "300"
+  namespace           = "AWS/Lambda"
+  metric_name         = "Invocations"
+  dimensions = {
+    function_name = aws_lambda_function.visitorCounter.function_name
+  }
+  alarm_actions = [aws_sns_topic.alarmNotifications.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "apiLatency" {
+  alarm_name          = "apiLatency"
+  evaluation_periods  = "1"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = "1000"
+  statistic           = "Average"
+  period              = "300"
+  namespace           = "AWS/ApiGateway"
+  metric_name         = "Latency"
+  dimensions = {
+    ApiName = aws_api_gateway_rest_api.restTest.name
   }
   alarm_actions = [aws_sns_topic.alarmNotifications.arn]
 }
