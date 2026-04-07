@@ -34,17 +34,17 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/aws/lambda/${local.lambda_function_name}"
+  name              = "/aws/lambda/${local.lambda_function_name}"
   retention_in_days = 14
 }
 
 data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
-    actions = [ "sts:AssumeRole" ]
+    actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
-      identifiers = [ "lambda.amazonaws.com" ]
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
     }
   }
 }
@@ -78,23 +78,23 @@ data "aws_iam_policy_document" "lambda_execution_raw_policy" {
 }
 
 resource "aws_iam_policy" "lambda_execution_policy" {
-  name = "lambda_execution_policy"
+  name        = "lambda_execution_policy"
   description = "Allows CloudWatch Log posting, and DynamoDB item updating"
-  policy = data.aws_iam_policy_document.lambda_execution_raw_policy.json
+  policy      = data.aws_iam_policy_document.lambda_execution_raw_policy.json
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "lambda_execution_role"
+  name               = "lambda_execution_role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
-  role = aws_iam_role.lambda_execution_role.name
+  role       = aws_iam_role.lambda_execution_role.name
   policy_arn = aws_iam_policy.lambda_execution_policy.arn
 }
 
 resource "aws_lambda_function" "visitor_counter" {
-  depends_on = [ aws_cloudwatch_log_group.lambda_log_group ]
+  depends_on       = [aws_cloudwatch_log_group.lambda_log_group]
   function_name    = local.lambda_function_name
   role             = aws_iam_role.lambda_execution_role.arn
   filename         = data.archive_file.lambda_zip.output_path
