@@ -178,11 +178,6 @@ resource "aws_sns_topic" "alarmNotifications" {
   name = "alarmNotifications"
 }
 
-variable "notification_email" {
-  type      = string
-  sensitive = true
-}
-
 resource "aws_sns_topic_subscription" "emailNotifications" {
   endpoint  = var.notification_email
   protocol  = "email"
