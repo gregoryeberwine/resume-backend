@@ -1,5 +1,8 @@
 name: Update Backend
-on: [push]
+on:
+  push:
+    branches:
+      - main
 env: 
   AWS_REGION: us-east-1
 permissions: 
