@@ -182,6 +182,12 @@ resource "aws_api_gateway_stage" "prod" {
   stage_name    = "Prod"
 }
 
+resource "aws_ssm_parameter" "api_url" {
+  name  = "cloud_resume/api_url"
+  type  = "String"
+  value = aws_api_gateway_stage.prod.invoke_url
+}
+
 resource "aws_lambda_permission" "lambdaAPIPermission" {
   statement_id  = "allowAPIInvoke"
   action        = "lambda:InvokeFunction"
