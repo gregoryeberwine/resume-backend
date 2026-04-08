@@ -183,7 +183,7 @@ resource "aws_api_gateway_stage" "prod" {
 }
 
 resource "aws_ssm_parameter" "api_url" {
-  name  = "cloud_resume/api_url"
+  name  = "/cloud_resume/api_url"
   type  = "String"
   value = aws_api_gateway_stage.prod.invoke_url
 }
