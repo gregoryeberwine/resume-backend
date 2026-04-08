@@ -78,13 +78,13 @@ data "aws_iam_policy_document" "lambda_execution_raw_policy" {
 }
 
 resource "aws_iam_policy" "lambda_execution_policy" {
-  name        = "lambda_execution_policy"
+  name        = "terraform-lambda-execution-policy"
   description = "Allows CloudWatch Log posting, and DynamoDB item updating"
   policy      = data.aws_iam_policy_document.lambda_execution_raw_policy.json
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name               = "lambda_execution_role"
+  name               = "terraform-lambda-execution-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
