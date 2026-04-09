@@ -93,7 +93,16 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
   policy_arn = aws_iam_policy.lambda_execution_policy.arn
 }
 
+data "aws_ssm_parameter" "cloudfront_url" {
+  name = "/cloud_resume/cloudfront_url"
+}
+
 resource "aws_lambda_function" "visitor_counter" {
+  environment {
+    variables = {
+      ALLOWED_ORIGIN = data.aws_ssm_parameter.cloudfront_url.value
+    }
+  }
   depends_on       = [aws_cloudwatch_log_group.lambda_log_group]
   function_name    = local.lambda_function_name
   role             = aws_iam_role.lambda_execution_role.arn
@@ -167,7 +176,7 @@ resource "aws_api_gateway_integration_response" "options" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Origin"  = "'https://gregoryeberwine.com'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'${data.aws_ssm_parameter.cloudfront_url.value}'"
   }
 }
 
