@@ -1,7 +1,9 @@
 import json
 import boto3
+import os
 
 client = boto3.client('dynamodb')
+ALLOWED_ORIGIN = os.environ["ALLOWED_ORIGIN"]
 
 def lambda_handler(event, context):
     get = client.get_item(
@@ -27,7 +29,7 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': {
-            'Access-Control-Allow-Origin': 'https://gregoryeberwine.com'
+            'Access-Control-Allow-Origin': ALLOWED_ORIGIN
         },
         'body': json.dumps({'numberVisitors': increment})
     }
