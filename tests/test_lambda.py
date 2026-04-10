@@ -73,6 +73,13 @@ def test_writes_incremented_value_to_dynamodb(mock_client):
     )
 
 
+def test_empty_table_starts_at_one(mock_client):
+    mock_client.get_item.return_value = {}  # simulates a fresh table with no item
+    result = lambda_function.lambda_handler({}, {})
+    body = json.loads(result["body"])
+    assert body["numberVisitors"] == 1
+
+
 def test_dynamodb_get_error_propagates(mock_client):
     mock_client.get_item.side_effect = ClientError(
         {"Error": {"Code": "ResourceNotFoundException", "Message": "Table not found"}},
