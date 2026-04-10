@@ -6,7 +6,7 @@ client = boto3.client('dynamodb')
 ALLOWED_ORIGIN = os.environ["ALLOWED_ORIGIN"]
 
 def lambda_handler(event, context):
-    get = client.get_item(
+    response = client.get_item(
         TableName='websiteTable',
         Key={
             'counter': {
@@ -16,9 +16,11 @@ def lambda_handler(event, context):
         ProjectionExpression='numberVisitors'
     )
 
-    increment = int(get['Item']['numberVisitors']['N']) + 1
+    item = response.get('Item', {})
+    current = int(item.get('numberVisitors', {}).get('N', 0))
+    increment = current + 1
 
-    put = client.put_item(
+    client.put_item(
         TableName='websiteTable',
         Item={
             'counter': {'S': 'visitors'},
