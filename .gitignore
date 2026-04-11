@@ -45,3 +45,6 @@ terraform.rc
 
 # python environment
 python/
+__pycache__/
+*.pyc
+test_2.py
