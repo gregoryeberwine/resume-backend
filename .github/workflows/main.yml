@@ -18,6 +18,7 @@ permissions:
   contents: read
 jobs:
   test:
+    if: github.event.inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -33,6 +34,7 @@ jobs:
         run: pytest tests/
   build:
     needs: test
+    if: github.event.inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
@@ -62,7 +64,6 @@ jobs:
           terraform init -backend-config="bucket=${STATE_BUCKET}"
           terraform apply -auto-approve
   destroy:
-    needs: build
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' && github.ref_name == 'dev'
     runs-on: ubuntu-latest
     steps:
