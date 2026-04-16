@@ -18,6 +18,7 @@ permissions:
   contents: read
 jobs:
   test:
+    if: github.event.inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -33,6 +34,7 @@ jobs:
         run: pytest tests/
   build:
     needs: test
+    if: github.event.inputs.destroy != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
