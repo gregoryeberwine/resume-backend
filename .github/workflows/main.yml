@@ -4,6 +4,13 @@ on:
     branches:
       - main
       - dev
+  workflow_dispatch:
+    inputs:
+      destroy:
+        description: 'Destroy dev infrastructure (only runs on dev branch)'
+        required: true
+        type: boolean
+        default: false
 env: 
   AWS_REGION: us-east-1
 permissions: 
@@ -54,3 +61,25 @@ jobs:
           cd terraform
           terraform init -backend-config="bucket=${STATE_BUCKET}"
           terraform apply -auto-approve
+  destroy:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.destroy == 'true' && github.ref_name == 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v6
+      - name: configure aws credentials for dev
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: ${{ secrets.SERVICE_ROLE_ARN }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+      - name: install Terraform
+        uses: hashicorp/setup-terraform@v4.0.0
+      - name: destroy dev infrastructure
+        env:
+          TF_VAR_notification_email: ${{ secrets.NOTIFICATION_EMAIL }}
+          STATE_BUCKET: ${{ secrets.DEV_STATE_BUCKET }}
+        run: |
+          cd terraform
+          terraform init -backend-config="bucket=${STATE_BUCKET}"
+          terraform destroy -auto-approve
